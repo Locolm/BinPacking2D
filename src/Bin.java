@@ -20,6 +20,10 @@ public class Bin {
         return false;
     }
 
+    public boolean removeItem(Item item) {
+        return items.remove(item);
+    }
+
     private boolean fits(Item item) {
         for (Item existingItem : items) {
             if (existingItem.x + item.width <= width && existingItem.y + item.height <= height) {
@@ -31,4 +35,37 @@ public class Bin {
         }
         return false;
     }
+
+    public boolean addItemWithRotation(Item item) {
+        if (fits(item)) {
+            items.add(item);
+            return true;
+        }
+        return false;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
 }

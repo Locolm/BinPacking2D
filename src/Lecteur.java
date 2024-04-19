@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Lecteur {
-    static Bin bin = new Bin(0, 0);;
+    static int width;
+    static int height;
 
-    static List<Item> items = new ArrayList<>();;
+    static List<Item> items = new ArrayList<>();
 
     public static void lireFichierBP2(String cheminFichier) {
 
@@ -17,9 +18,9 @@ public class Lecteur {
 
             while ((ligne = lecteur.readLine()) != null) {
                 if (ligne.startsWith("BIN_WIDTH:")) {
-                    bin.width = Integer.parseInt(ligne.split(":")[1].trim());
+                    width = Integer.parseInt(ligne.split(":")[1].trim());
                 } else if (ligne.startsWith("BIN_HEIGHT:")) {
-                    bin.height = Integer.parseInt(ligne.split(":")[1].trim());
+                    height = Integer.parseInt(ligne.split(":")[1].trim());
                 } else if (ligne.startsWith("ITEMS")) {
                     while ((ligne = lecteur.readLine()) != null && !ligne.isEmpty()) {
                         String[] infosItem = ligne.trim().split("\\s+");
@@ -37,7 +38,7 @@ public class Lecteur {
         }
 
         // Affichage des valeurs lues
-        System.out.println("Dimensions du bin : " + bin.width + " x " + bin.height);
+        System.out.println("Dimensions du bin : " + width + " x " + height);
         System.out.println("Items :");
         for (Item item : items) {
             System.out.println("ID : " + item.id + ", Width : " + item.width + ", Height : " + item.height);
