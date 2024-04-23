@@ -10,10 +10,10 @@ public class Lecteur {
 
     static List<Item> items = new ArrayList<>();
 
-    public static void lireFichierBP2(String cheminFichier) {
+    public static void readFileBP2(String filePath) {
 
         try {
-            BufferedReader lecteur = new BufferedReader(new FileReader(cheminFichier));
+            BufferedReader lecteur = new BufferedReader(new FileReader(filePath));
             String ligne;
 
             while ((ligne = lecteur.readLine()) != null) {
@@ -31,11 +31,13 @@ public class Lecteur {
                     }
                 }
             }
-
             lecteur.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //Trie des items par ordre décroissant de leur surface (width x height)
+        items.sort((item1, item2) -> item2.width * item2.height - item1.width * item1.height);
 
         // Affichage des valeurs lues
         System.out.println("Dimensions du bin : " + width + " x " + height);

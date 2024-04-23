@@ -21,23 +21,54 @@ public class Afficheur extends JFrame {
         setVisible(true);
     }
 
+//    private void afficherBins() {
+//        for (Bin bin : bins) {
+//            JPanel binPanel = new JPanel();
+//            binPanel.setLayout(new FlowLayout());
+//            binPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//            binPanel.setPreferredSize(new Dimension(bin.width, bin.height));
+//
+//            if (bin.item != null) {
+//                JPanel itemPanel = new JPanel();
+//                itemPanel.setPreferredSize(new Dimension(bin.item.getWidth(), bin.item.getHeight()));
+//                itemPanel.setBackground(generateRandomColor());
+//                binPanel.add(itemPanel);
+//            }
+//
+//            add(binPanel);
+//        }
+//    }
     private void afficherBins() {
-        for (Bin bin : bins) {
-            JPanel binPanel = new JPanel();
-            binPanel.setLayout(new FlowLayout());
-            binPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            binPanel.setPreferredSize(new Dimension(bin.getWidth(), bin.getHeight()));
+    for (Bin bin : bins) {
+        JPanel binPanel = new JPanel();
+        binPanel.setLayout(new GridLayout(2, 2)); // GridLayout pour afficher les sous-bins
+        binPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        binPanel.setPreferredSize(new Dimension(bin.width, bin.height));
 
-            for (Item item : bin.getItems()) {
-                JPanel itemPanel = new JPanel();
-                itemPanel.setPreferredSize(new Dimension( item.getWidth(), item.getHeight()));
-                itemPanel.setBackground(generateRandomColor());
-                binPanel.add(itemPanel);
+        // Parcourir les sous-bins
+        List<Bin> sousBins = bin.sousBins;
+        for (int i = 0; i < 4; i++) {
+            JPanel sousBinPanel = new JPanel();
+            sousBinPanel.setLayout(new FlowLayout());
+            sousBinPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
+            sousBinPanel.setPreferredSize(new Dimension(bin.sousBins.get(i).width, bin.sousBins.get(i).height));
+
+            if (sousBins.size() > i) {
+                Bin sousBin = sousBins.get(i);
+                if (sousBin.item != null) {
+                    JPanel itemPanel = new JPanel();
+                    itemPanel.setPreferredSize(new Dimension(sousBin.item.getWidth(), sousBin.item.getHeight()));
+                    itemPanel.setBackground(generateRandomColor());
+                    sousBinPanel.add(itemPanel);
+                }
             }
 
-            add(binPanel);
+            binPanel.add(sousBinPanel);
         }
+
+        add(binPanel);
     }
+}
 
     private Color generateRandomColor() {
         Random random = new Random();

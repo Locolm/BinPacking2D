@@ -2,15 +2,11 @@ public class Item {
     int id;
     int width;
     int height;
-    int x;
-    int y;
 
     public Item(int id, int width, int height) {
         this.id = id;
         this.width = width;
         this.height = height;
-        this.x = -1;
-        this.y = -1;
     }
 
     public void rotate(){
@@ -31,11 +27,4 @@ public class Item {
         return height;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
 }
