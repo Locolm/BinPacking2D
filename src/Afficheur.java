@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Afficheur extends JFrame {
 
-    private List<Bin> bins;
+    private final List<Bin> bins;
 
     public Afficheur(List<Bin> bins) {
         this.bins = bins;
@@ -20,55 +20,90 @@ public class Afficheur extends JFrame {
 
         setVisible(true);
     }
-
-//    private void afficherBins() {
-//        for (Bin bin : bins) {
-//            JPanel binPanel = new JPanel();
-//            binPanel.setLayout(new FlowLayout());
-//            binPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//            binPanel.setPreferredSize(new Dimension(bin.width, bin.height));
-//
-//            if (bin.item != null) {
-//                JPanel itemPanel = new JPanel();
-//                itemPanel.setPreferredSize(new Dimension(bin.item.getWidth(), bin.item.getHeight()));
-//                itemPanel.setBackground(generateRandomColor());
-//                binPanel.add(itemPanel);
-//            }
-//
-//            add(binPanel);
-//        }
-//    }
+/*
     private void afficherBins() {
-    for (Bin bin : bins) {
+        for (Bin bin : bins) {
+            afficherSousBinsRecursif(bin, bin.width, bin.height);
+        }
+    }
+
+    private void afficherSousBinsRecursif(Bin bin, int parentWidth, int parentHeight) {
         JPanel binPanel = new JPanel();
         binPanel.setLayout(new GridLayout(2, 2)); // GridLayout pour afficher les sous-bins
         binPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        binPanel.setPreferredSize(new Dimension(bin.width, bin.height));
+        binPanel.setPreferredSize(new Dimension(parentWidth, parentHeight));
 
-        // Parcourir les sous-bins
         List<Bin> sousBins = bin.sousBins;
-        for (int i = 0; i < 4; i++) {
+        for (Bin sousBin : sousBins) {
             JPanel sousBinPanel = new JPanel();
             sousBinPanel.setLayout(new FlowLayout());
             sousBinPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
-            sousBinPanel.setPreferredSize(new Dimension(bin.sousBins.get(i).width, bin.sousBins.get(i).height));
+            sousBinPanel.setPreferredSize(new Dimension(sousBin.width, sousBin.height)); // Taille des sous-bins
 
-            if (sousBins.size() > i) {
-                Bin sousBin = sousBins.get(i);
-                if (sousBin.item != null) {
-                    JPanel itemPanel = new JPanel();
-                    itemPanel.setPreferredSize(new Dimension(sousBin.item.getWidth(), sousBin.item.getHeight()));
-                    itemPanel.setBackground(generateRandomColor());
-                    sousBinPanel.add(itemPanel);
-                }
+            if (sousBin.item != null) {
+                JPanel itemPanel = new JPanel();
+                itemPanel.setPreferredSize(new Dimension(sousBin.item.getWidth(), sousBin.item.getHeight()));
+                itemPanel.setBackground(generateRandomColor());
+                sousBinPanel.add(itemPanel);
             }
 
             binPanel.add(sousBinPanel);
+
+            // Vérifier s'il y a des sous-bins pour ce sous-bin et les parcourir récursivement
+            if (!sousBin.sousBins.isEmpty()) {
+                afficherSousBinsRecursif(sousBin, sousBin.width, sousBin.height);
+            }
         }
 
         add(binPanel);
     }
-}
+ */
+
+    private void afficherBins() {
+        JPanel mainPanel = new JPanel(); // Panneau principal pour tous les bins
+        mainPanel.setLayout(new FlowLayout());
+        mainPanel.setPreferredSize(new Dimension(800, 600)); // Taille de la fenêtre principale
+
+        for (Bin bin : bins) {
+            JPanel binPanel = new JPanel();
+            binPanel.setLayout(new GridLayout(2, 2)); // GridLayout pour afficher les sous-bins
+            binPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            binPanel.setPreferredSize(new Dimension(bin.width, bin.height)); // Taille des bins initiaux
+
+            afficherSousBinsRecursif(bin, binPanel);
+
+            mainPanel.add(binPanel);
+        }
+
+        setContentPane(mainPanel);
+        revalidate(); // Rafraîchit l'affichage
+    }
+
+    private void afficherSousBinsRecursif(Bin bin, JPanel parentPanel) {
+        List<Bin> sousBins = bin.sousBins;
+        for (Bin sousBin : sousBins) {
+            JPanel sousBinPanel = new JPanel();
+            sousBinPanel.setLayout(new FlowLayout());
+            sousBinPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
+            sousBinPanel.setPreferredSize(new Dimension(sousBin.width, sousBin.height)); // Taille des sous-bins
+
+            if (sousBin.item != null) {
+                JPanel itemPanel = new JPanel();
+                itemPanel.setPreferredSize(new Dimension(sousBin.item.getWidth(), sousBin.item.getHeight()));
+                itemPanel.setBackground(generateRandomColor());
+                sousBinPanel.add(itemPanel);
+            }
+
+            parentPanel.add(sousBinPanel);
+
+            // Vérifier s'il y a des sous-bins pour ce sous-bin et les parcourir récursivement
+            if (!sousBin.sousBins.isEmpty()) {
+                afficherSousBinsRecursif(sousBin, sousBinPanel);
+            }
+        }
+    }
+
+
 
     private Color generateRandomColor() {
         Random random = new Random();
