@@ -1,8 +1,6 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.Random;
 
 public class Afficheur extends JFrame {
 
@@ -20,44 +18,6 @@ public class Afficheur extends JFrame {
 
         setVisible(true);
     }
-/*
-    private void afficherBins() {
-        for (Bin bin : bins) {
-            afficherSousBinsRecursif(bin, bin.width, bin.height);
-        }
-    }
-
-    private void afficherSousBinsRecursif(Bin bin, int parentWidth, int parentHeight) {
-        JPanel binPanel = new JPanel();
-        binPanel.setLayout(new GridLayout(2, 2)); // GridLayout pour afficher les sous-bins
-        binPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        binPanel.setPreferredSize(new Dimension(parentWidth, parentHeight));
-
-        List<Bin> sousBins = bin.sousBins;
-        for (Bin sousBin : sousBins) {
-            JPanel sousBinPanel = new JPanel();
-            sousBinPanel.setLayout(new FlowLayout());
-            sousBinPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
-            sousBinPanel.setPreferredSize(new Dimension(sousBin.width, sousBin.height)); // Taille des sous-bins
-
-            if (sousBin.item != null) {
-                JPanel itemPanel = new JPanel();
-                itemPanel.setPreferredSize(new Dimension(sousBin.item.getWidth(), sousBin.item.getHeight()));
-                itemPanel.setBackground(generateRandomColor());
-                sousBinPanel.add(itemPanel);
-            }
-
-            binPanel.add(sousBinPanel);
-
-            // Vérifier s'il y a des sous-bins pour ce sous-bin et les parcourir récursivement
-            if (!sousBin.sousBins.isEmpty()) {
-                afficherSousBinsRecursif(sousBin, sousBin.width, sousBin.height);
-            }
-        }
-
-        add(binPanel);
-    }
- */
 
     private void afficherBins() {
         JPanel mainPanel = new JPanel(); // Panneau principal pour tous les bins
@@ -66,9 +26,9 @@ public class Afficheur extends JFrame {
 
         for (Bin bin : bins) {
             JPanel binPanel = new JPanel();
-            binPanel.setLayout(new GridLayout(2, 2)); // GridLayout pour afficher les sous-bins
+            binPanel.setLayout(null); // Utiliser un layout null pour positionner les sous-bins manuellement
             binPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            binPanel.setPreferredSize(new Dimension(bin.width, bin.height)); // Taille des bins initiaux
+            binPanel.setPreferredSize(new Dimension(bin.getWidth(), bin.getHeight())); // Taille des bins initiaux
 
             afficherSousBinsRecursif(bin, binPanel);
 
@@ -80,33 +40,42 @@ public class Afficheur extends JFrame {
     }
 
     private void afficherSousBinsRecursif(Bin bin, JPanel parentPanel) {
-        List<Bin> sousBins = bin.sousBins;
-        for (Bin sousBin : sousBins) {
+        List<Bin> sousBins = bin.getSousBins();
+        int currentX = 0;
+        int maxY = 0; // Variable pour suivre la hauteur maximale des sous-bins
+        for (int i = 0; i < sousBins.size(); i++) {
+            Bin sousBin = sousBins.get(i);
             JPanel sousBinPanel = new JPanel();
-            sousBinPanel.setLayout(new FlowLayout());
+            sousBinPanel.setLayout(null); // Utiliser un layout null pour positionner les sous-bins manuellement
             sousBinPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
-            sousBinPanel.setPreferredSize(new Dimension(sousBin.width, sousBin.height)); // Taille des sous-bins
+            sousBinPanel.setPreferredSize(new Dimension(sousBin.getWidth(), sousBin.getHeight())); // Taille des sous-bins
 
-            if (sousBin.item != null) {
-                JPanel itemPanel = new JPanel();
-                itemPanel.setPreferredSize(new Dimension(sousBin.item.getWidth(), sousBin.item.getHeight()));
-                itemPanel.setBackground(generateRandomColor());
-                sousBinPanel.add(itemPanel);
+            if (sousBin.getItem() != null) {
+                // Colorier l'intérieur du sous-bin pour représenter l'item
+                sousBinPanel.setBackground(sousBin.getItem().getColor());
             }
 
+            // Positionner les sous-bins côte à côte
+            sousBinPanel.setBounds(currentX, 0, sousBin.getWidth(), sousBin.getHeight());
             parentPanel.add(sousBinPanel);
 
-            // Vérifier s'il y a des sous-bins pour ce sous-bin et les parcourir récursivement
-            if (!sousBin.sousBins.isEmpty()) {
+            // Mettre à jour la hauteur maximale
+            maxY = Math.max(maxY, sousBin.getHeight());
+
+            // Si ce n'est pas le dernier sous-bin, ajouter la largeur au currentX
+            if (i < sousBins.size() - 1) {
+                currentX += sousBin.getWidth();
+            } else {
+                // Si c'est le dernier sous-bin, réinitialiser currentX et positionner en bas
+                currentX = 0;
+                sousBinPanel.setBounds(currentX, maxY, sousBin.getWidth(), sousBin.getHeight());
+                maxY += sousBin.getHeight(); // Augmenter la hauteur maximale pour le sous-bin en bas
+            }
+
+            // Si le sous-bin a des sous-bins, afficher récursivement les items à l'intérieur
+            if (!sousBin.getSousBins().isEmpty()) {
                 afficherSousBinsRecursif(sousBin, sousBinPanel);
             }
         }
-    }
-
-
-
-    private Color generateRandomColor() {
-        Random random = new Random();
-        return new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
     }
 }
