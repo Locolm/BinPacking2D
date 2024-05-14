@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Item {
@@ -6,12 +8,14 @@ public class Item {
     int width;
     int height;
     Color color;
+    List<Integer> position;
 
     public Item(int id, int width, int height) {
         this.id = id;
         this.width = width;
         this.height = height;
         this.color = this.generateRandomColor();
+        position = new ArrayList<>();
     }
 
     private Color generateRandomColor() {
@@ -39,6 +43,10 @@ public class Item {
 
     public int getHeight() {
         return height;
+    }
+
+    public void setPosition(List<Integer> pos){
+        this.position= pos;
     }
 
 }

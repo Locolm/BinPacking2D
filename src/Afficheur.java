@@ -68,8 +68,10 @@ public class Afficheur extends JFrame {
             } else {
                 // Si c'est le dernier sous-bin, réinitialiser currentX et positionner en bas
                 currentX = 0;
+                maxY = bin.getHeight()- sousBin.getHeight(); // Augmenter la hauteur maximale pour le sous-bin en bas
                 sousBinPanel.setBounds(currentX, maxY, sousBin.getWidth(), sousBin.getHeight());
-                maxY += sousBin.getHeight(); // Augmenter la hauteur maximale pour le sous-bin en bas
+                //maxY += sousBin.getHeight();
+
             }
 
             // Si le sous-bin a des sous-bins, afficher récursivement les items à l'intérieur
