@@ -13,6 +13,15 @@ public class Afficheur extends JFrame {
 
     public Afficheur(List<Bin> bins) {
         this.bins = bins;
+        if (bins.get(0).height<=250) {
+            ratio = 0.9;
+        }
+        else if (bins.get(0).height>=1000) {
+            ratio = 0.2;
+        }
+        else {
+            ratio =0.5;
+        }
         setTitle("Afficheur de Bins");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
