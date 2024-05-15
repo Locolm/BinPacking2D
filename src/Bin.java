@@ -53,7 +53,6 @@ public class Bin {
 
     private boolean fits(Item _item, List<Integer> pos) {
         pos.add(0);
-
         //création des sous-bins et placement de l'item
         if (sousBins.isEmpty()) {
             if (_item.width <= this.width && _item.height <= this.height) {
@@ -65,7 +64,7 @@ public class Bin {
                 if (sousBin.item == null && sousBin.fits(_item, pos)) {
                     return true;
                 }
-                //pos.removeLast();
+                if (pos.size()>2){ pos.removeLast();}
                 pos.set(pos.size()-1,pos.getLast() + 1);
             }
         }
