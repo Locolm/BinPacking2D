@@ -70,7 +70,6 @@ public class Afficheur extends JFrame {
                 currentX = 0;
                 maxY = bin.getHeight()- sousBin.getHeight(); // Augmenter la hauteur maximale pour le sous-bin en bas
                 sousBinPanel.setBounds(currentX, maxY, sousBin.getWidth(), sousBin.getHeight());
-                //maxY += sousBin.getHeight();
 
             }
 

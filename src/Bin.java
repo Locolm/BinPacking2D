@@ -6,8 +6,6 @@ public class Bin {
     int height;
     Item item;
 
-    List<Integer> position;
-
     List<Bin> sousBins;
 
     public int getWidth() {
@@ -34,12 +32,12 @@ public class Bin {
     }
 
     public boolean addItem(Item _item, List<Integer> pos) {
-        return fits(_item, pos, 2);
+        return fits(_item, new ArrayList<>(pos));
     }
 
     public boolean addItemWithRotation(Item _item, List<Integer> pos) {
         _item.rotate();
-        return fits(_item, pos, 2);
+        return fits(_item, new ArrayList<>(pos));
     }
 
     private void divideBin(Item _item, List<Integer> pos) {
@@ -53,15 +51,9 @@ public class Bin {
         sousBins.add(sousBinB);
     }
 
-    private boolean fits(Item _item, List<Integer> pos, int index) {
-        //si pos pas de taille suffisante (par rapport à index), on ajoute des 0
-        if(pos.size() < index+1){
-            pos.add(0);
-        }
-        //si pos trop grand réduire la taille de la liste (par rapport à index), on supprime le dernier élément
-        if(pos.size() > index+1){
-            pos.removeLast();
-        }
+    private boolean fits(Item _item, List<Integer> pos) {
+        pos.add(0);
+
         //création des sous-bins et placement de l'item
         if (sousBins.isEmpty()) {
             if (_item.width <= this.width && _item.height <= this.height) {
@@ -70,10 +62,11 @@ public class Bin {
             }
         } else {
             for (Bin sousBin : sousBins) {
-                if (sousBin.item == null && sousBin.fits(_item, pos, index+1)) {
+                if (sousBin.item == null && sousBin.fits(_item, pos)) {
                     return true;
                 }
-                pos.set(index, pos.get(index) + 1);
+                //pos.removeLast();
+                pos.set(pos.size()-1,pos.getLast() + 1);
             }
         }
         return false;

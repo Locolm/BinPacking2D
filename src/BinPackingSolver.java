@@ -23,10 +23,6 @@ public class BinPackingSolver {
         this.position= new ArrayList<>();
     }
 
-    public void addItem(Item item) {
-        items.add(item);
-    }
-
     public void init() {
         // Création du premier bin
         Bin firstBin = new Bin(binWidth, binHeight);
@@ -36,13 +32,12 @@ public class BinPackingSolver {
         // Placement des items dans les bins avec rotations si nécessaire
         for (Item item : items) {
             boolean placed = false;
+            this.position.set(0, 0);
             for (Bin bin : bins) {
                 if (bin.addItem(item, position)) {
                     placed = true;
-                    break;
                 } else if (bin.addItemWithRotation(item, position)) {
                     placed = true;
-                    break;
                 }
                 this.position.set(0, position.getFirst()+1);
             }
