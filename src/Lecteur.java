@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 public class Lecteur {
     static int width;
@@ -36,6 +37,8 @@ public class Lecteur {
             e.printStackTrace();
         }
 
+        //Mélange des items
+        //Collections.shuffle(items);
         //Trie des items par ordre décroissant de leur surface (width x height)
         items.sort((item1, item2) -> item2.width * item2.height - item1.width * item1.height);
 
