@@ -23,14 +23,9 @@ public class BinPackingSolver {
         this.position= new ArrayList<>();
     }
 
-    public void init() {
-        // Création du premier bin
-        Bin firstBin = new Bin(binWidth, binHeight);
-        bins.add(firstBin);
-        this.position.add(0);
-
+    public void placeItem(List<Item> listItems) {
         // Placement des items dans les bins avec rotations si nécessaire
-        for (Item item : items) {
+        for (Item item : listItems) {
             boolean placed = false;
             this.position.set(0, 0);
             for (Bin bin : bins) {
@@ -49,8 +44,34 @@ public class BinPackingSolver {
             }
         }
 
+    }
+
+    public void init() {
+        // Création du premier bin
+        Bin firstBin = new Bin(binWidth, binHeight);
+        bins.add(firstBin);
+        this.position.add(0);
+
+        placeItem(items);
+
         // Affichage visuel des bins et des items
         display();
+        /*
+        //faire une boucle et enlever le premier item croisé
+        for (Bin sousBin : bins.get(1).sousBins) {
+            if (sousBin.item != null) {
+                //enlever l'item
+                sousBin.item = null;
+                break;
+            }
+        }
+        //attendre 1 seconde
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        afficheur.refreshBin(1);*/
 
     }
 
@@ -105,8 +126,12 @@ public class BinPackingSolver {
 
     public void display() {
         afficheur = new Afficheur(bins);
+        afficheur.display();
     }
 
-    private void refreshDisplay() {afficheur = new Afficheur(bins);}
+    private void refreshDisplay() {
+        afficheur = new Afficheur(bins);
+        afficheur.display();
+    }
 
 }
