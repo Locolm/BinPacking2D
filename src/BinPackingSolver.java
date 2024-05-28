@@ -75,61 +75,31 @@ public class BinPackingSolver {
 
     }
 
-    public void iterate(int iterations) {
-        for (int i = 0; i < iterations; i++) {
-            // Calculer la nouvelle solution
-            calculateNewSolution();
-            // Rafraîchir l'affichage
-            refreshDisplay();
-        }
-    }
+    public void solveRecuit(){
+        for (int i = 0; i < items.size()-1; i++)
+        {
+            for (int j = i+1; j < items.size(); j++)
+            {
+                //récupérer les ids des items dans les mêmes sousBins des items i et j qui sont ceux qui vont être inversés
+                //on vide les sousBins correspondants
+                List<Integer> posI = items.get(i).position;
+                List<Integer> remainsPosI = posI.subList(1, posI.size());
+                List<Integer> idsItemsI = bins.get(posI.getFirst()).getIdsItemsInSousBins(bins.get(posI.getFirst()).sousBins);
+                bins.get(posI.getFirst()).setSousBins(null,remainsPosI);
 
-    private void parcoursSousBinsItems(Bin bin, Integer id) {
-        //référencer la position des items par levels de sous-bins 0 1 2 dans la liste des items, afin de ne pas avoir à reboucler pour retrouver ceux à échanger.
-    for (Bin sousBin : bin.sousBins){
-        if (id!=null){
-            if(sousBin.item==null) {//échanger l'item avec une place vide (ajout dans la liste des voisins)
-                //(voisins calcul d'évaluation de la solution)
-                //vérifier si il y a suffisamment de place dans les deux bins pour l'échange
-            }
-            else {
-                //échanger deux items (ajout dans la liste des voisins)
-                //(voisins calcul d'évaluation de la solution)
-                //vérifier si il y a suffisamment de place dans les deux bins pour l'échange
-            }
+                List<Integer> posJ = items.get(j).position;
+                List<Integer> remainsPosJ = posJ.subList(1, posJ.size());
+                List<Integer> idsItemsJ = bins.get(posJ.getFirst()).getIdsItemsInSousBins(bins.get(posJ.getFirst()).sousBins);
+                bins.get(posJ.getFirst()).setSousBins(null,remainsPosJ);
 
-        }
-        else {
-            //l'id est null, il faut sélectionner le premier item à échanger
-            if (sousBin.item != null) {
-                id = sousBin.item.id;
+                //on replace ensuite les items dans l'ordre (en inversant I et J)
+                // on utilise la fonction de remplissage automatique pour placer les items, dans un bin, s'il n'y a plus de place
+                //on crée un nouveau bin
             }
         }
-        if (!sousBin.sousBins.isEmpty()){
-            for (Bin sousSousBin : sousBin.sousBins) {parcoursSousBinsItems(sousSousBin, id);}
-        }
-
-    }
-    }
-
-    private void calculateNewSolution() {
-        // Implémentez ici votre algorithme pour calculer une nouvelle solution
-        // Par exemple, utilisez un algorithme de recherche locale pour améliorer la solution actuelle
-
-        // Parcourir chaque bin
-        for (Bin bin : bins) {
-            // Parcourir chaque item dans le bin
-            parcoursSousBinsItems(bin, null);
-                // Chercher les voisins possibles
-            }
     }
 
     public void display() {
-        afficheur = new Afficheur(bins);
-        afficheur.display();
-    }
-
-    private void refreshDisplay() {
         afficheur = new Afficheur(bins);
         afficheur.display();
     }

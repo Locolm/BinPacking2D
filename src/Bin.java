@@ -70,4 +70,38 @@ public class Bin {
         }
         return false;
     }
+
+    public Bin getSousBins(List<Bin> sousBins, List<Integer> pos) {
+        int index = pos.getFirst();
+        if (pos.size() == 1) {
+            return sousBins.get(index);
+        } else {
+            Bin current = sousBins.get(index);
+            List<Integer> remainingPos = pos.subList(1, pos.size());
+            return getSousBins(current.sousBins, remainingPos);
+        }
+    }
+
+    public List<Integer> getIdsItemsInSousBins(List<Bin> sousBins){
+        List<Integer> ids = new ArrayList<>();
+        for (Bin sousBin : sousBins) {
+            if (sousBin.item != null) {
+                ids.add(sousBin.item.getId());
+            }
+            ids.addAll(getIdsItemsInSousBins(sousBin.sousBins));
+        }
+        return ids;
+    }
+
+    public void setSousBins(Bin sousBin, List<Integer> pos) {
+        int index = pos.getFirst();
+        if (pos.size() == 1) {
+            this.sousBins.set(index, sousBin);
+        } else {
+            List<Integer> remainingPos = pos.subList(1, pos.size());
+            Bin child = this.sousBins.get(index);
+            child.setSousBins(sousBin, remainingPos);
+        }
+    }
+
 }
