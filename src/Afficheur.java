@@ -40,11 +40,20 @@ public class Afficheur extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
-        // Création du menu "Options"
-        JMenu menuOptions = new JMenu("Options");
-        menuBar.add(menuOptions);
+        // Création des boutons du menu
+        JMenu menuZoom = new JMenu("Zoom");
+        JMenu menuDlSoluce = new JMenu("Solution");
+        menuBar.add(menuZoom);
+        menuBar.add(menuDlSoluce);
 
         // Ajout des boutons
+        JMenuItem downloadButton = new JMenuItem("Download");
+        downloadButton.addActionListener(e -> {
+            System.out.println("dl");
+            Download.download(bins, "solution_BinPackind_2D.json");
+        });
+        menuDlSoluce.add(downloadButton);
+
         JMenuItem zoomPlus = new JMenuItem("+");
         zoomPlus.addActionListener(e -> {
             if (ratio + 0.1 <= 1)
@@ -56,7 +65,7 @@ public class Afficheur extends JFrame {
                 repaint();
             }
         });
-        menuOptions.add(zoomPlus);
+        menuZoom.add(zoomPlus);
 
         JMenuItem zoomMinus = new JMenuItem("-");
         zoomMinus.addActionListener(e -> {
@@ -70,7 +79,7 @@ public class Afficheur extends JFrame {
             }
 
         });
-        menuOptions.add(zoomMinus);
+        menuZoom.add(zoomMinus);
 
         afficherBins();
 

@@ -104,5 +104,4 @@ public class Bin {
             child.setSousBins(sousBin, remainingPos);
         }
     }
-
 }

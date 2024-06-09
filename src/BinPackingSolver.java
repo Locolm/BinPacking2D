@@ -23,12 +23,7 @@ public class BinPackingSolver {
         this.position= new ArrayList<>();
     }
 
-    public void placeItem(List<Item> listItems, List<Bin> bins) {
-        boolean isSpecificBin=true;
-        if (bins==null){
-            bins = this.bins;
-            isSpecificBin = false;
-        }
+    public void placeItem(List<Item> listItems) {
         // Placement des items dans les bins avec rotations si nécessaire
         for (Item item : listItems) {
             boolean placed = false;
@@ -46,13 +41,8 @@ public class BinPackingSolver {
                 Bin newBin = new Bin(binWidth, binHeight);
                 newBin.addItem(item, position);
                 bins.add(newBin);
-                List<Item> itemNotPlaced = new ArrayList<>();
-                itemNotPlaced.add(item);
-                if (isSpecificBin){placeItem(itemNotPlaced,null);}
-
             }
         }
-        this.bins = bins;
     }
 
     public void init() {
@@ -61,7 +51,7 @@ public class BinPackingSolver {
         bins.add(firstBin);
         this.position.add(0);
 
-        placeItem(items,null);
+        placeItem(items);
 
         // Affichage visuel des bins et des items
         display();
@@ -116,15 +106,15 @@ public class BinPackingSolver {
                 // On récupère la listes des items de chaque bins
                 List<Item> firstListItems = bins.get(i).getItemsInSousBins(bins.get(i).sousBins);
                 List<Item> secondListItems = bins.get(j).getItemsInSousBins(bins.get(j).sousBins);
-                for (int k = 0; k < firstListItems.size(); k++) {
-                    for (int p = 0; p < secondListItems.size(); p++) {
+                for (Item firstListItem : firstListItems) {
+                    for (Item secondListItem : secondListItems) {
                         //on récupère la liste des items contenant l'item à échanger et ceux placés dans les sousbin associés
-                        List<Integer> firstPos = firstListItems.get(k).position;
-                        List<Integer> secondPos = secondListItems.get(p).position;
+                        List<Integer> firstPos = firstListItem.position;
+                        List<Integer> secondPos = secondListItem.position;
 
                         // On supprime les sousBins associés (retirant ainsi les items)
-                        ResultBin firstBin = BinProcessor.removeBinAtPosition(bins.get(firstPos.getFirst()),firstPos.subList(1,firstPos.size()));
-                        ResultBin secondBin = BinProcessor.removeBinAtPosition(bins.get(secondPos.getFirst()),secondPos.subList(1,secondPos.size()));
+                        ResultBin firstBin = BinProcessor.removeBinAtPosition(bins.get(i), firstPos.subList(1, firstPos.size()));
+                        ResultBin secondBin = BinProcessor.removeBinAtPosition(bins.get(j), secondPos.subList(1, secondPos.size()));
 
                         //on replace la liste des items en inversant les bins
                         //on place d'abord item1 puis item2
@@ -136,15 +126,15 @@ public class BinPackingSolver {
                         singleFirstItem.add(firstBin.items.getFirst());
                         List<Item> singleSecondItem = new ArrayList<>();
                         singleSecondItem.add(firstBin.items.getFirst());
-                        placeItem(singleFirstItem, singleFirstBin);
-                        placeItem(singleSecondItem, signleSecondBin);
+                        placeItem(singleFirstItem);
+                        placeItem(singleSecondItem);
                         //puis on fusionne la liste restante list1+list2
-                        List<Item> list1 = firstBin.items.subList(1,firstBin.items.size());
-                        List<Item> list2 = secondBin.items.subList(1,secondBin.items.size());
+                        List<Item> list1 = firstBin.items.subList(1, firstBin.items.size());
+                        List<Item> list2 = secondBin.items.subList(1, secondBin.items.size());
                         list1.addAll(list2);
 
                         //on utilise la fonction placeItem par défaut pour combler les trous
-                        placeItem(list1,null);
+                        placeItem(list1);
 
                         //on refresh la fenêtre
                         try {
