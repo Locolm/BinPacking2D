@@ -82,16 +82,17 @@ public class Bin {
         }
     }
 
-    public List<Integer> getIdsItemsInSousBins(List<Bin> sousBins){
-        List<Integer> ids = new ArrayList<>();
+    public List<Item> getItemsInSousBins(List<Bin> sousBins) {
+        List<Item> items = new ArrayList<>();
         for (Bin sousBin : sousBins) {
             if (sousBin.item != null) {
-                ids.add(sousBin.item.getId());
+                items.add(sousBin.item);
             }
-            ids.addAll(getIdsItemsInSousBins(sousBin.sousBins));
+            items.addAll(getItemsInSousBins(sousBin.sousBins));
         }
-        return ids;
+        return items;
     }
+
 
     public void setSousBins(Bin sousBin, List<Integer> pos) {
         int index = pos.getFirst();
