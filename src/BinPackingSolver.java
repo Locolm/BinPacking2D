@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class BinPackingSolver {
     private List<Bin> bins;
@@ -46,7 +47,7 @@ public class BinPackingSolver {
         }
     }
 
-    public void init() {
+    public void init() throws Exception {
         // Création du premier bin
         List<Integer> posBin = new ArrayList<>();
         posBin.add(0);
@@ -56,7 +57,13 @@ public class BinPackingSolver {
 
         // Affichage visuel des bins et des items
         display();
-        selectAndSwitch();
+        //selectAndSwitch();
+        List<Integer> test1 = new ArrayList<>();
+        test1.add(2);
+        test1.add(1);
+        List<Integer> test2 = new ArrayList<>();
+        test2.add(1);
+        switchAndRefresh(test1,test2);
         /*
         //faire une boucle et enlever le premier item croisé
         for (Bin sousBin : bins.get(1).sousBins) {
@@ -74,6 +81,55 @@ public class BinPackingSolver {
         }
         afficheur.refreshBin(1);*/
 
+    }
+
+    public void switchAndRefresh(List<Integer> pos1,List<Integer> pos2) throws Exception {
+        // à utiliser sans donner la dernière position (0) dans le cas d'un item.
+        if (pos1.isEmpty() || pos2.isEmpty()){
+            throw new Exception("On ne peut pas échanger des positions vides");
+        }
+        if (pos1==pos2){
+            throw new Exception("On ne peut pas échanger les mêmes positions");
+        }
+        Bin bin1 = getSousBinWithPos(pos1);
+        Bin bin2 = getSousBinWithPos(pos2);
+        Item item1;
+        Item item2;
+/*        if (bin1.item!=null){
+            item1 = bin1.item;
+        } else if (bin2.item==null){
+            throw new Exception("Au moins une des positions doit correspondre à un item");
+        }
+        if (bin2.item !=null){
+            item2 = bin2.item;
+        }*/
+        bin1.sousBins = new ArrayList<>(); //when there is sousbins
+        bin2.sousBins.set(pos2.getLast(), new Bin(0, 0, new ArrayList<>())); //when there is no sousbins
+        //int w2 = bin2.sousBins.get(pos2.getLast()).width;
+/*        int h2 = bin2.sousBins.get(pos2.getLast()).height;
+        List<Integer> posBin2 = bin2.sousBins.get(pos2.getLast()).position;
+        Bin b = bin2.sousBins.get(pos2.getLast());
+        b = new Bin(w2,h2,posBin2);*/
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //afficheur.refreshBin(0);
+        refreshAll();
+    }
+
+    public Bin getSousBinWithPos(List<Integer> pos){
+        List<Bin> selectBins = null;
+        for (Integer i : pos) {
+            if (Objects.equals(i, pos.getLast()) && selectBins != null){
+                return selectBins.get(i);
+            } else if (Objects.equals(i, pos.getLast()) && selectBins == null){
+                return bins.get(i);
+            }
+            selectBins = bins.get(i).sousBins;
+        }
+        return null;
     }
 
     public void selectAndSwitch(){
@@ -148,6 +204,12 @@ public class BinPackingSolver {
     public void display() {
         afficheur = new Afficheur(bins);
         afficheur.display();
+    }
+
+    public void refreshAll(){
+        for (int i =0; i<bins.size();i++){
+            afficheur.refreshBin(i);
+        }
     }
 
 }
