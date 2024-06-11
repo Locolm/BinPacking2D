@@ -8,6 +8,8 @@ public class Bin {
 
     List<Bin> sousBins;
 
+    List<Integer> position;
+
     public int getWidth() {
         return width;
     }
@@ -24,48 +26,52 @@ public class Bin {
         return sousBins;
     }
 
-    public Bin(int width, int height) {
+    public Bin(int width, int height, List<Integer> position) {
         this.width = width;
         this.height = height;
         this.item = null;
+        this.position = position;
         this.sousBins = new ArrayList<>();
     }
 
-    public boolean addItem(Item _item, List<Integer> pos) {
-        return fits(_item, new ArrayList<>(pos));
+    public boolean addItem(Item _item) {
+        return fits(_item);
     }
 
-    public boolean addItemWithRotation(Item _item, List<Integer> pos) {
+    public boolean addItemWithRotation(Item _item) {
         _item.rotate();
-        return fits(_item, new ArrayList<>(pos));
+        return fits(_item);
     }
 
-    private void divideBin(Item _item, List<Integer> pos) {
-        Bin sousBinTL = new Bin(_item.width, _item.height);
+    private void divideBin(Item _item) {
+        List<Integer> posTL = new ArrayList<>(position);
+        posTL.add(0);
+        Bin sousBinTL = new Bin(_item.width, _item.height,posTL);
         sousBinTL.item = _item;
-        sousBinTL.item.setPosition(pos);
+        sousBinTL.item.setPosition(posTL);
         sousBins.add(sousBinTL);
-        Bin sousBinTR = new Bin(this.width - _item.width ,_item.height );
-        Bin sousBinB = new Bin(this.width, this.height - _item.height);
+        List<Integer> posTR = new ArrayList<>(position);
+        posTR.add(sousBins.size());
+        Bin sousBinTR = new Bin(this.width - _item.width ,_item.height,posTR);
         sousBins.add(sousBinTR);
+        List<Integer> posB = new ArrayList<>(position);
+        posB.add(sousBins.size());
+        Bin sousBinB = new Bin(this.width, this.height - _item.height,posB);
         sousBins.add(sousBinB);
     }
 
-    private boolean fits(Item _item, List<Integer> pos) {
-        pos.add(0);
+    private boolean fits(Item _item) {
         //création des sous-bins et placement de l'item
         if (sousBins.isEmpty()) {
             if (_item.width <= this.width && _item.height <= this.height) {
-                divideBin(_item, pos);
+                divideBin(_item);
                 return true;
             }
         } else {
             for (Bin sousBin : sousBins) {
-                if (sousBin.item == null && sousBin.fits(_item, pos)) {
+                if (sousBin.item == null && sousBin.fits(_item)) {
                     return true;
                 }
-                if (pos.size()>2){ pos.removeLast();}
-                pos.set(pos.size()-1,pos.getLast() + 1);
             }
         }
         return false;

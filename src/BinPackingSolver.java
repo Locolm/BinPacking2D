@@ -11,8 +11,6 @@ public class BinPackingSolver {
     private final int binWidth;
     private final int binHeight;
 
-    private List<Integer> position;
-
     private Afficheur afficheur;
 
     public BinPackingSolver(int binWidth, int binHeight, List<Item> items) {
@@ -20,26 +18,29 @@ public class BinPackingSolver {
         this.binHeight = binHeight;
         this.bins = new ArrayList<>();
         this.items = items;
-        this.position= new ArrayList<>();
     }
 
     public void placeItem(List<Item> listItems) {
         // Placement des items dans les bins avec rotations si nécessaire
+        // Vérifier chaque item
         for (Item item : listItems) {
             boolean placed = false;
-            this.position.set(0, 0);
             for (Bin bin : bins) {
-                if (bin.addItem(item, position)) {
+                if (bin.addItem(item)) {
                     placed = true;
-                } else if (bin.addItemWithRotation(item, position)) {
+                } else if (bin.addItemWithRotation(item)) {
                     placed = true;
                 }
-                this.position.set(0, position.getFirst()+1);
+               if (placed){
+                    break;
+                }
             }
             if (!placed) {
                 // Si l'item ne peut pas être placé dans les bins existants, on crée un nouveau bin
-                Bin newBin = new Bin(binWidth, binHeight);
-                newBin.addItem(item, position);
+                List<Integer> posBin = new ArrayList<>();
+                posBin.add(bins.size()); // car la position commence à 0
+                Bin newBin = new Bin(binWidth, binHeight,posBin);
+                newBin.addItem(item);
                 bins.add(newBin);
             }
         }
@@ -47,10 +48,10 @@ public class BinPackingSolver {
 
     public void init() {
         // Création du premier bin
-        Bin firstBin = new Bin(binWidth, binHeight);
+        List<Integer> posBin = new ArrayList<>();
+        posBin.add(0);
+        Bin firstBin = new Bin(binWidth, binHeight,posBin);
         bins.add(firstBin);
-        this.position.add(0);
-
         placeItem(items);
 
         // Affichage visuel des bins et des items
@@ -73,31 +74,6 @@ public class BinPackingSolver {
         }
         afficheur.refreshBin(1);*/
 
-    }
-
-    public void guessBestNeighbour(){
-        for (int i = 0; i < items.size()-1; i++)
-        //neighbourhood search
-        {
-            for (int j = i+1; j < items.size(); j++)
-            {
-                //récupérer les ids des items dans les mêmes sousBins des items i et j qui sont ceux qui vont être inversés
-                //on vide les sousBins correspondants
-                List<Integer> posI = items.get(i).position;
-                List<Integer> remainsPosI = posI.subList(1, posI.size());
-                List<Item> ItemsI = bins.get(posI.getFirst()).getItemsInSousBins(bins.get(posI.getFirst()).sousBins);
-                bins.get(posI.getFirst()).setSousBins(null,remainsPosI);
-
-                List<Integer> posJ = items.get(j).position;
-                List<Integer> remainsPosJ = posJ.subList(1, posJ.size());
-                List<Item> ItemsJ = bins.get(posJ.getFirst()).getItemsInSousBins(bins.get(posJ.getFirst()).sousBins);
-                bins.get(posJ.getFirst()).setSousBins(null,remainsPosJ);
-
-                //on replace ensuite les items dans l'ordre (en inversant I et J)
-                // on utilise la fonction de remplissage automatique pour placer les items, dans un bin, s'il n'y a plus de place
-                //on crée un nouveau bin
-            }
-        }
     }
 
     public void selectAndSwitch(){
@@ -144,6 +120,8 @@ public class BinPackingSolver {
                         }
                         afficheur.refreshBin(i);
                         afficheur.refreshBin(j);
+                        //rafraichir tous les bins ici (finalement on utilise directement placeItem
+                        //pour combler les trous, donc il y a possibilité que d'autres bins sois changés que ceux concernés par le switch
 
                         //on évalue la solution, si elle est < à min alors on enregistre le nv min
                     }
@@ -153,40 +131,6 @@ public class BinPackingSolver {
         // this.bin prends la valeur de la nouvelle solution
         //on ajoute l'interdiction à tabou si on a eu dégradation
     }
-
-/*
-    public void selectAndSwitch(List<Bin> bins) {
-        for (int i = 0; i < bins.size(); i++) {
-            for (int j = i + 1; j < bins.size(); j++) {
-                List<Bin> binList = new ArrayList<>();
-                binList.add(bins.get(i));
-                Result firstElement = BinProcessor.findNthElement(binList, i);
-                List<Bin> binList2 = new ArrayList<>();
-                binList2.add(bins.get(j));
-                Result secondElement = BinProcessor.findNthElement(binList2, j);
-                if (firstElement.isItem || secondElement.isItem){
-                    ResultBin firstBin = BinProcessor.removeBinAtPosition(bins.get(firstElement.position.getFirst()), firstElement.position.subList(1,firstElement.position.size()));
-                    ResultBin secondBin= BinProcessor.removeBinAtPosition(bins.get(secondElement.position.getFirst()), firstElement.position.subList(1,secondElement.position.size()));
-                    List<Bin> firstListBin = new ArrayList<>();
-                    firstListBin.add(firstBin.bin);
-                    List<Bin> secondListBin = new ArrayList<>();
-                    secondListBin.add(secondBin.bin);
-                    placeItem(secondBin.items,firstListBin);
-                    placeItem(firstBin.items,secondListBin);
-                    //attendre 1 seconde
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    afficheur.refreshBin(firstElement.position.getFirst());
-                    afficheur.refreshBin(secondElement.position.getFirst());
-
-                }
-            }
-        }
-    }
-*/
 
     public List<Item> getItemsByIds(List<Integer> ids){
         List<Item> items = new ArrayList<>();

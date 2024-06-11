@@ -67,14 +67,17 @@ public class BinProcessor {
         List<Item> items = targetBin.getItemsInSousBins(singleBinTarget);
 
         Bin newBin;
+        List<Integer> posBin = new ArrayList<>(parentBin.position);
+        posBin.add(targetIndex);
         //vérification si sous-bin adjacant n'est pas vide
         if (((targetIndex==0)||(targetIndex==1))&&(checkCriteria(parentBin.sousBins.get(targetIndex==0?1: 0)))){
             //si on est ici resizer le newBin ainsi que le sous-bin adjacant (0,0) afin que newBin occuppe tout l'espace
             newBin = new Bin(parentBin.sousBins.get(targetIndex).width+parentBin.sousBins.get(targetIndex==0?1: 0).width,
-                    parentBin.sousBins.get(targetIndex).height+parentBin.sousBins.get(targetIndex==0?1: 0).height);
+                    parentBin.sousBins.get(targetIndex).height+parentBin.sousBins.get(targetIndex==0?1: 0).height,
+                    posBin);
         }
         else{
-            newBin = new Bin(parentBin.sousBins.get(targetIndex).width,parentBin.sousBins.get(targetIndex).height);
+            newBin = new Bin(parentBin.sousBins.get(targetIndex).width,parentBin.sousBins.get(targetIndex).height,posBin);
         }
         // Supprimer le sous-bin cible
         parentBin.sousBins.remove(targetIndex);

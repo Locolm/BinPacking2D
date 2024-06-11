@@ -5,7 +5,7 @@ public class Main {
         BinPackingSolver binPackingSolver = new BinPackingSolver(Lecteur.width, Lecteur.height, Lecteur.items);
         binPackingSolver.init();
 
-        System.out.println("hello");
+        System.out.println("Process ended with success");
     }
 
 }
