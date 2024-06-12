@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Afficheur extends JFrame {
 
-    private final List<Bin> bins;
+    private List<Bin> bins;
 
     private JPanel[] binsPanels;
 
@@ -163,5 +163,9 @@ public class Afficheur extends JFrame {
                 afficherSousBinsRecursif(sousBin, sousBinPanel);
             }
         }
+    }
+
+    public void setBins(List<Bin> bins) {
+        this.bins = bins;
     }
 }

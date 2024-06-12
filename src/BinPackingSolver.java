@@ -59,10 +59,13 @@ public class BinPackingSolver {
         display();
         //selectAndSwitch();
         List<Integer> test1 = new ArrayList<>();
-        test1.add(2);
         test1.add(1);
+        test1.add(0);
         List<Integer> test2 = new ArrayList<>();
+        test2.add(3);
+        test2.add(2);
         test2.add(1);
+        test2.add(0);
         switchAndRefresh(test1,test2);
         /*
         //faire une boucle et enlever le premier item croisé
@@ -84,39 +87,99 @@ public class BinPackingSolver {
     }
 
     public void switchAndRefresh(List<Integer> pos1,List<Integer> pos2) throws Exception {
-        // à utiliser sans donner la dernière position (0) dans le cas d'un item.
+        //pos1 = position OU item, pos2 = item
         if (pos1.isEmpty() || pos2.isEmpty()){
             throw new Exception("On ne peut pas échanger des positions vides");
         }
         if (pos1==pos2){
             throw new Exception("On ne peut pas échanger les mêmes positions");
         }
-        Bin bin1 = getSousBinWithPos(pos1);
-        Bin bin2 = getSousBinWithPos(pos2);
-        Item item1;
-        Item item2;
-/*        if (bin1.item!=null){
-            item1 = bin1.item;
-        } else if (bin2.item==null){
-            throw new Exception("Au moins une des positions doit correspondre à un item");
+        List<Integer> copy1 = new ArrayList<>(pos1);
+        copy1.removeLast();
+        Bin bin1 = getSousBinWithPos(copy1);
+        List<Item> items = new ArrayList<>();
+        if (bin1.sousBins.get(pos1.getLast()).item!=null) {
+            //if item not null pos1.getLast == 0
+            items.add(bin1.sousBins.get(pos1.getLast()).item);
+            bin1.sousBins.get(pos1.getLast()).item = null;
+            if (!bin1.sousBins.get(1).sousBins.isEmpty()){
+                //si le sousbins adjaçant n'est pas vide, on inverse leur places
+                swapSousBins(0,1,bin1);
+            } else if (bin1.sousBins.get(2).sousBins.isEmpty()){
+                // si les 2 sont vides
+                bin1.sousBins = new ArrayList<>();
+            } else if(bin1.sousBins.get(1).sousBins.isEmpty() && !bin1.sousBins.get(2).sousBins.isEmpty()){
+                //si juste le premier est vide, on fusionne en réduisant le 2ème sousBin à 0 0
+                bin1.sousBins.get(0).width += bin1.sousBins.get(1).width;
+                bin1.sousBins.get(0).height += bin1.sousBins.get(1).height;
+                bin1.sousBins.get(1).width=0;
+                bin1.sousBins.get(1).height=0;
+            }
         }
-        if (bin2.item !=null){
-            item2 = bin2.item;
-        }*/
-        bin1.sousBins = new ArrayList<>(); //when there is sousbins
-        bin2.sousBins.set(pos2.getLast(), new Bin(0, 0, new ArrayList<>())); //when there is no sousbins
-        //int w2 = bin2.sousBins.get(pos2.getLast()).width;
-/*        int h2 = bin2.sousBins.get(pos2.getLast()).height;
-        List<Integer> posBin2 = bin2.sousBins.get(pos2.getLast()).position;
-        Bin b = bin2.sousBins.get(pos2.getLast());
-        b = new Bin(w2,h2,posBin2);*/
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        List<Integer> copy2 = new ArrayList<>(pos2);
+        copy2.removeLast();
+        Bin bin2 = getSousBinWithPos(copy2);
+        if (bin2.sousBins.get(pos2.getLast()).item!=null) {
+            //if item not null pos1.getLast == 0
+            if (pos1.getFirst()>pos2.getFirst()){items.add(bin2.sousBins.get(pos2.getLast()).item);}
+            else {items.addFirst(bin2.sousBins.get(pos2.getLast()).item);}
+
+            bin2.sousBins.get(pos2.getLast()).item = null;
+            if (!bin2.sousBins.get(1).sousBins.isEmpty()){
+                //si le sousbins adjaçant n'est pas vide, on inverse leur places
+                swapSousBins(0,1,bin2);
+            } else if (bin2.sousBins.get(2).sousBins.isEmpty()){
+                // si les 2 sont vides
+                bin2.sousBins = new ArrayList<>();
+            } else if(bin2.sousBins.get(1).sousBins.isEmpty() && !bin2.sousBins.get(2).sousBins.isEmpty()){
+                //si juste le premier est vide, on fusionne en réduisant le 2ème sousBin à 0 0
+                bin2.sousBins.get(0).width += bin2.sousBins.get(1).width;
+                bin2.sousBins.get(0).height += bin2.sousBins.get(1).height;
+                bin2.sousBins.get(1).width=0;
+                bin2.sousBins.get(1).height=0;
+            }
+        } else {
+            throw new Exception("Le deuxième argument doit correspondre à un item");
         }
-        //afficheur.refreshBin(0);
-        refreshAll();
+        refreshAll(2000);
+        placeItem(items);
+        refreshAll(2000);
+    }
+
+    public static List<Item> mergeLists(List<Item> list1, List<Item> list2) {
+        List<Item> mergedList = new ArrayList<>();
+
+        // Add the first two elements of each list to the merged list
+        for (int i = 0; i < 2; i++) {
+            if (i < list1.size()) {
+                mergedList.add(list1.get(i));
+            }
+            if (i < list2.size()) {
+                mergedList.add(list2.get(i));
+            }
+        }
+
+        // Add the remaining elements of list1
+        for (int i = 2; i < list1.size(); i++) {
+            mergedList.add(list1.get(i));
+        }
+
+        // Add the remaining elements of list2
+        for (int i = 2; i < list2.size(); i++) {
+            mergedList.add(list2.get(i));
+        }
+
+        return mergedList;
+    }
+
+    public void swapSousBins(int index1, int index2, Bin bin) {
+        if (index1 < 0 || index1 >= bin.sousBins.size() || index2 < 0 || index2 >= bin.sousBins.size()) {
+            throw new IndexOutOfBoundsException("Les indices sont hors limites");
+        }
+
+        Bin temp = bin.sousBins.get(index1);
+        bin.sousBins.set(index1, bin.sousBins.get(index2));
+        bin.sousBins.set(index2, temp);
     }
 
     public Bin getSousBinWithPos(List<Integer> pos){
@@ -206,8 +269,14 @@ public class BinPackingSolver {
         afficheur.display();
     }
 
-    public void refreshAll(){
-        for (int i =0; i<bins.size();i++){
+    public void refreshAll(int wait){
+        try {
+            Thread.sleep(wait);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        afficheur.setBins(bins);
+        for (int i =0; i<bins.size()-1;i++){
             afficheur.refreshBin(i);
         }
     }
