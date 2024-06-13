@@ -173,7 +173,7 @@ public class Afficheur extends JFrame {
     }
 
     public void setBins(List<Bin> bins) {
-        if (this.bins.size()!=this.binsPanels.size()){
+        if (this.bins.size()>this.binsPanels.size()){
             Bin bin= bins.getLast();
             JPanel binPanel = new JPanel();
             binPanel.setLayout(null); // Utiliser un layout null pour positionner les sous-bins manuellement
@@ -189,6 +189,16 @@ public class Afficheur extends JFrame {
             revalidate(); // Rafraîchit l'affichage
             repaint();    // Redessine l'interface graphique
         }
+        else if (this.bins.size()<this.binsPanels.size()){
+            JPanel lastBinPanel = binsPanels.removeLast();
+            mainPanel.remove(lastBinPanel);
+
+            // Rafraîchir l'affichage
+            setContentPane(mainPanel);
+            revalidate(); // Rafraîchit l'affichage
+            repaint();    // Redessine l'interface graphique
+        }
+
         this.bins = bins;
 
     }
