@@ -2,19 +2,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Afficheur extends JFrame {
 
     private List<Bin> bins;
 
-    private JPanel[] binsPanels;
+    private List<JPanel> binsPanels;
 
     private double ratio;
 
+    private JPanel mainPanel;
+
     public Afficheur(List<Bin> bins) {
         this.bins = bins;
-        this.binsPanels = new JPanel[bins.size()];
+        this.binsPanels = new ArrayList<>();
         if (bins.getFirst().height <= 250) {
             if (bins.size()>=19){ratio = 0.8;}
             else {ratio = 1.0;}
@@ -28,6 +31,7 @@ public class Afficheur extends JFrame {
         else {
             ratio = 0.5;
         }
+        mainPanel = new JPanel(); // Panneau principal pour tous les bins
     }
     public void display() {
         setTitle("Afficheur de Bins");
@@ -87,7 +91,6 @@ public class Afficheur extends JFrame {
     }
 
     private void afficherBins() {
-        JPanel mainPanel = new JPanel(); // Panneau principal pour tous les bins
         mainPanel.setLayout(new FlowLayout());
 
         for (int i = 0; i < bins.size(); i++) {
@@ -99,7 +102,7 @@ public class Afficheur extends JFrame {
 
             afficherSousBinsRecursif(bin, binPanel);
 
-            binsPanels[i]=(binPanel);
+            binsPanels.add((binPanel));
             mainPanel.add(binPanel);
         }
 
@@ -107,14 +110,18 @@ public class Afficheur extends JFrame {
         revalidate(); // Rafraîchit l'affichage
     }
 
-    public void refreshBin(int index) {
+    public void refreshBin(int index,List<Bin> bins) {
         if (index < 0 || index >= bins.size()) {
             throw new IndexOutOfBoundsException("Index de bin invalide");
         }
+        if (index==9){
+            System.out.println("wtf");
+        }
+        setBins(bins);
 
         Bin bin = bins.get(index);
 
-        JPanel binPanel = binsPanels[index];
+        JPanel binPanel = binsPanels.get(index);
         binPanel.removeAll();
         binPanel.setPreferredSize(new Dimension((int) (bin.getWidth() * ratio), (int) (bin.getHeight() * ratio)));
 
@@ -166,6 +173,23 @@ public class Afficheur extends JFrame {
     }
 
     public void setBins(List<Bin> bins) {
+        if (this.bins.size()!=this.binsPanels.size()){
+            Bin bin= bins.getLast();
+            JPanel binPanel = new JPanel();
+            binPanel.setLayout(null); // Utiliser un layout null pour positionner les sous-bins manuellement
+            binPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            binPanel.setPreferredSize(new Dimension( (int) (bin.getWidth()*ratio) , (int) (bin.getHeight()*ratio))); // Taille des bins initiaux
+
+            afficherSousBinsRecursif(bin, binPanel);
+
+            binsPanels.add(binPanel);
+            mainPanel.add(binPanel);
+            // Rafraîchir l'affichage
+            setContentPane(mainPanel);
+            revalidate(); // Rafraîchit l'affichage
+            repaint();    // Redessine l'interface graphique
+        }
         this.bins = bins;
+
     }
 }
