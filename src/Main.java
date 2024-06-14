@@ -25,30 +25,35 @@ public class Main {
             }
         }
         entryValid = false;
+        boolean alreadyShowed = false;
         while (!entryValid) {
-            System.out.println("Do you want to run preset Tabou?\n Y/N");
+            if (alreadyShowed){System.out.println("Do you want to run preset Tabou?\n Y/N");}
             String input = scanner.nextLine().trim().toLowerCase();
 
             // Vérifier si l'utilisateur a entré une réponse valide
-            if (input.equals("y") || input.equals("yes") || input.equals("1")) {
-                entryValid = true;
-                System.out.println("Starting Tabou with \n{ iteration:5, lengthTabou:10, waitingTime:500, displayNeighbour:false}");
-                // Appeler la méthode pour exécuter le Tabou prédéfini
-                BinPackingSolver binPackingSolver = new BinPackingSolver(Lecteur.width, Lecteur.height, Lecteur.items,5,10,500,false);
-                binPackingSolver.init();
-            } else if (input.equals("n") || input.equals("no") || input.equals("0")) {
-                entryValid = true;
-                binMain();
-            } else {
-                System.out.println("Invalid input. Please enter y or n");
+            if (input.isEmpty()){
+                alreadyShowed = true;
+            }
+            if (!input.isEmpty()){
+                if (input.equals("y") || input.equals("yes") || input.equals("1")) {
+                    entryValid = true;
+                    System.out.println("Starting Tabou with \n{ iteration:5, lengthTabou:10, waitingTime:500, displayNeighbour:false}");
+                    // Appeler la méthode pour exécuter le Tabou prédéfini
+                    BinPackingSolver binPackingSolver = new BinPackingSolver(Lecteur.width, Lecteur.height, Lecteur.items,5,10,500,false);
+                    binPackingSolver.init();
+                } else if (input.equals("n") || input.equals("no") || input.equals("0")) {
+                    entryValid = true;
+                    binMain(scanner);
+                } else {
+                    System.out.println("Invalid input. Please enter y or n");
+                }
             }
         }
 
         System.out.println("Process ended with success");
     }
 
-    private static void binMain() throws Exception {
-        Scanner scanner = new Scanner(System.in);
+    private static void binMain(Scanner scanner) throws Exception {
 
         int iterations = 0;
         int lengthTabou = 0;

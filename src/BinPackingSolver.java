@@ -5,10 +5,11 @@ import java.util.Objects;
 
 public class BinPackingSolver {
     private List<Bin> bins;
-    private final List<Item> items;
+    private List<Item> items;
 
     //Tabou
     private  List<Pair<Pair<Integer, Integer>, List<Bin>>> solutions; //pour évaluer si dégradation
+    private List<List<Item>> listItemsSolutions;
     private List<Bin> originalSolution;
     private List<Pair<Integer, Integer>> tabou = new ArrayList<>();
     //asked user
@@ -32,6 +33,7 @@ public class BinPackingSolver {
         this.iteration = iteration;
         this.displayNeighbour = displayNeighbour;
         this.waitingTime=waitingTime;
+        this.listItemsSolutions = new ArrayList<>();
     }
 
     public void placeItem(List<Item> listItems) {
@@ -82,17 +84,20 @@ public class BinPackingSolver {
         for(int i=0;i<iteration;i++){
             originalSolution = new ArrayList<>(bins);
             selectAndSwitch(waitingTime,displayNeighbour);
+            bins = new ArrayList<>();
+            placeItem(items);
             refreshAll(waitingTime);
         }
     }
 
-    public void switchItem(int ind1, int ind2,int wait, boolean displayNeighbour) {
-        if (ind1 < 0 || ind1 >= items.size() || ind2 < 0 || ind2 >= items.size()) {
+    public List<Item> switchItem(int ind1, int ind2,int wait, boolean displayNeighbour) {
+        List<Item> newListItems = new ArrayList<>(items);
+        if (ind1 < 0 || ind1 >= newListItems.size() || ind2 < 0 || ind2 >= newListItems.size()) {
             throw new IndexOutOfBoundsException("Indices are out of bounds");
         }
-        Item temp = items.get(ind1);
-        items.set(ind1, items.get(ind2));
-        items.set(ind2, temp);
+        Item temp = newListItems.get(ind1);
+        newListItems.set(ind1, newListItems.get(ind2));
+        newListItems.set(ind2, temp);
         //reset bins
         this.bins = new ArrayList<>();
         List<Integer> posBin = new ArrayList<>();
@@ -100,8 +105,9 @@ public class BinPackingSolver {
         Bin firstBin = new Bin(binWidth, binHeight,posBin);
         this.bins.add(firstBin);
         //replace items
-        placeItem(items);
+        placeItem(newListItems);
         if (displayNeighbour){refreshAll(wait);}
+        return newListItems;
     }
 
     public boolean checkTabou(int i, int j) {
@@ -115,13 +121,16 @@ public class BinPackingSolver {
 
     public void selectAndSwitch( int wait, boolean displayNeighbour ) throws Exception {
         boolean switched = false;
+        int count= 0;
         for (int i = 0; i < items.size(); i++) {
             for (int j = i + 1; j < items.size() - 1; j++) {
-                switchItem(i,j,wait,displayNeighbour);
+                listItemsSolutions.add(switchItem(i,j,wait,displayNeighbour));
                 //si cela ne correspond pas à un changement de tabou et que l'on respecte les conditions
                 if(originalSolution.size()>=bins.size() && !checkTabou(i,j)){
+                    //on choisi cette solution comme optimale
                     originalSolution = bins;
                     switched = true;
+                    count++;
                 }
                 solutions.add(new Pair<>(new Pair<>(i, j), bins));
             }
@@ -131,11 +140,13 @@ public class BinPackingSolver {
             //on prend la meilleure solution possible
             int minBins = solutions.getFirst().getSecond().size();
             List<Pair<Integer,Integer>> changeItem = new ArrayList<>();
-            for (Pair<Pair<Integer, Integer>, List<Bin>> solution : solutions) {
+            for (int i=0;i<solutions.size();i++) {
+                Pair<Pair<Integer, Integer>, List<Bin>> solution = solutions.get(i);
                 //si la solution ne correspond pas à un changement de tabou et qu'on respecte les conditions
                 if (minBins >= solution.getSecond().size() && !checkTabou(solution.getFirst().getFirst(),solution.getFirst().getSecond())) {
                     minBins = solution.getSecond().size();
                     originalSolution = solution.getSecond();
+                    items = listItemsSolutions.get(i);
                     if (changeItem.isEmpty()){
                         changeItem = new ArrayList<>();
                     }
@@ -153,7 +164,11 @@ public class BinPackingSolver {
                 }
             }
         }
-        bins = originalSolution;
+        else {
+            items = listItemsSolutions.get(count-1);
+            bins = originalSolution;
+        }
+
     }
 
     public void display() {
