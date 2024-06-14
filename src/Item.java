@@ -20,7 +20,7 @@ public class Item {
 
     private Color generateRandomColor() {
         Random random = new Random();
-        return new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        return new Color(random.nextInt(205), random.nextInt(205), random.nextInt(205));
     }
 
     public Color getColor(){
