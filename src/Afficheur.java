@@ -15,6 +15,8 @@ public class Afficheur extends JFrame {
 
     private JPanel mainPanel;
 
+    private int downloadCounter;
+
     public Afficheur(List<Bin> bins) {
         this.bins = bins;
         this.binsPanels = new ArrayList<>();
@@ -32,6 +34,7 @@ public class Afficheur extends JFrame {
             ratio = 0.5;
         }
         mainPanel = new JPanel(); // Panneau principal pour tous les bins
+        downloadCounter = 0;
     }
     public void display() {
         setTitle("Afficheur de Bins");
@@ -53,8 +56,16 @@ public class Afficheur extends JFrame {
         // Ajout des boutons
         JMenuItem downloadButton = new JMenuItem("Download");
         downloadButton.addActionListener(e -> {
-            System.out.println("dl");
-            Download.download(bins, "solution_BinPackind_2D.json");
+            System.out.println("Downloading...");
+
+            // Génération du nom de fichier unique avec le compteur
+            String fileName = "solution_BinPackind_2D_" + downloadCounter + ".json";
+            Download.download(bins, fileName);
+
+            System.out.println("File downloaded: " + fileName);
+
+            // Incrémentation du compteur pour le prochain téléchargement
+            downloadCounter++;
         });
         menuDlSoluce.add(downloadButton);
 
