@@ -7,21 +7,31 @@ public class BinPackingSolver {
     private List<Bin> bins;
     private final List<Item> items;
 
-    private List<List<Bin>> solutions;
+    //Tabou
+    private  List<Pair<Pair<Integer, Integer>, List<Bin>>> solutions; //pour évaluer si dégradation
     private List<Bin> originalSolution;
-
-    private List<Map.Entry<Integer,Bin>> Voisins;
+    private List<Pair<Integer, Integer>> tabou = new ArrayList<>();
+    //asked user
+    private int lengthTabou=10;
+    int iteration = 5;
+    boolean displayNeighbour = false;
+    int waitingTime=500;
 
     private final int binWidth;
     private final int binHeight;
 
     private Afficheur afficheur;
 
-    public BinPackingSolver(int binWidth, int binHeight, List<Item> items) {
+    public BinPackingSolver(int binWidth, int binHeight, List<Item> items,int iteration,int lengthTabou, int waitingTime,boolean displayNeighbour) {
         this.binWidth = binWidth;
         this.binHeight = binHeight;
         this.bins = new ArrayList<>();
         this.items = items;
+        this.solutions = new ArrayList<>();
+        this.lengthTabou=lengthTabou;
+        this.iteration = iteration;
+        this.displayNeighbour = displayNeighbour;
+        this.waitingTime=waitingTime;
     }
 
     public void placeItem(List<Item> listItems) {
@@ -60,11 +70,14 @@ public class BinPackingSolver {
 
         // Affichage visuel des bins et des items
         display();
-
+        System.out.println("you have 5 second to open the window");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Running tabou ...");
         //Tabou
-        int iteration = 5;
-        boolean displayNeighbour = false;
-        int waitingTime=500;
         //parcours des voisins et selection du meilleur dans this.bins
         for(int i=0;i<iteration;i++){
             originalSolution = new ArrayList<>(bins);
@@ -91,14 +104,52 @@ public class BinPackingSolver {
         if (displayNeighbour){refreshAll(wait);}
     }
 
+    public boolean checkTabou(int i, int j) {
+        for (Pair<Integer, Integer> pair : tabou) {
+            if (Objects.equals(pair.getFirst(), i) && Objects.equals(pair.getSecond(), j)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void selectAndSwitch( int wait, boolean displayNeighbour ) throws Exception {
-        for (int i = 0; i < bins.size(); i++) {
-            for (int j = i + 1; j < bins.size() - 1; j++) {
-                if(!Objects.equals(items.get(i).position.getFirst(), items.get(j).position.getFirst())) {
-                    switchItem(i,j,wait,displayNeighbour);
-                    if(originalSolution.size()>=bins.size()){
-                        originalSolution = bins;
+        boolean switched = false;
+        for (int i = 0; i < items.size(); i++) {
+            for (int j = i + 1; j < items.size() - 1; j++) {
+                switchItem(i,j,wait,displayNeighbour);
+                //si cela ne correspond pas à un changement de tabou et que l'on respecte les conditions
+                if(originalSolution.size()>=bins.size() && !checkTabou(i,j)){
+                    originalSolution = bins;
+                    switched = true;
+                }
+                solutions.add(new Pair<>(new Pair<>(i, j), bins));
+            }
+        }
+        if (!switched){
+            //si on arrive là c'est que l'on a dégradation de la solution
+            //on prend la meilleure solution possible
+            int minBins = solutions.getFirst().getSecond().size();
+            List<Pair<Integer,Integer>> changeItem = new ArrayList<>();
+            for (Pair<Pair<Integer, Integer>, List<Bin>> solution : solutions) {
+                //si la solution ne correspond pas à un changement de tabou et qu'on respecte les conditions
+                if (minBins >= solution.getSecond().size() && !checkTabou(solution.getFirst().getFirst(),solution.getFirst().getSecond())) {
+                    minBins = solution.getSecond().size();
+                    originalSolution = solution.getSecond();
+                    if (changeItem.isEmpty()){
+                        changeItem = new ArrayList<>();
                     }
+                    changeItem.add(solution.getFirst());
+                }
+            }
+            //s'il y a bien eu un changement
+            if (!changeItem.isEmpty()) {
+                //on ajoute la dégradation à la liste tabou
+                if (tabou.size() >= lengthTabou) {
+                    tabou.removeFirst();
+                    tabou.add(changeItem.getFirst());
+                } else {
+                    tabou.add(changeItem.getFirst());
                 }
             }
         }

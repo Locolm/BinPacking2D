@@ -114,9 +114,7 @@ public class Afficheur extends JFrame {
         if (index < 0 || index >= bins.size()) {
             throw new IndexOutOfBoundsException("Index de bin invalide");
         }
-        if (index==9){
-            System.out.println("wtf");
-        }
+
         setBins(bins);
 
         Bin bin = bins.get(index);
