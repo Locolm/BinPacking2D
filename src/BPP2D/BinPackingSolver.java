@@ -1,10 +1,7 @@
 package BPP2D;
 
 import App.Afficheur;
-import BPP2D.Bin;
-import BPP2D.Item;
 import Metaheuristics.Metaheuristic;
-import Metaheuristics.Tabu;
 import Utils.Pair;
 
 import java.util.ArrayList;
@@ -21,6 +18,9 @@ public class BinPackingSolver {
     public List<List<Item>> listItemsSolutions;
     public List<Bin> originalSolution;
     public List<Pair<Integer, Integer>> tabou = new ArrayList<>();
+
+    // Record best solution so far
+    public List<Bin> bestSolution;
 
 
     private final int binWidth;
@@ -71,6 +71,7 @@ public class BinPackingSolver {
         Bin firstBin = new Bin(binWidth, binHeight,posBin);
         bins.add(firstBin);
         placeItem(items);
+        bestSolution = new ArrayList<>(bins);
 
         // Affichage visuel des bins et des items
         display();
@@ -83,7 +84,7 @@ public class BinPackingSolver {
         this.metaheuristic.run(this);
     }
 
-    public List<Item> switchItem(int ind1, int ind2,int wait, boolean displayNeighbour) {
+    public List<Item> switchItem(int ind1, int ind2) {
         List<Item> newListItems = new ArrayList<>(items);
         if (ind1 < 0 || ind1 >= newListItems.size() || ind2 < 0 || ind2 >= newListItems.size()) {
             throw new IndexOutOfBoundsException("Indices are out of bounds");
@@ -99,7 +100,6 @@ public class BinPackingSolver {
         this.bins.add(firstBin);
         //replace items
         placeItem(newListItems);
-        if (displayNeighbour){refreshAll(wait);}
         return newListItems;
     }
 
@@ -113,20 +113,24 @@ public class BinPackingSolver {
     }
 
     /**
-     * Selectionne et switch les items
+     * Selectionne et switch les items  selon Tabou
      */
-    public void selectAndSwitch( int wait, boolean displayNeighbour, int lengthTabou ) throws Exception {
+    public void selectAndSwitch(int lengthTabou ) throws Exception {
         boolean switched = false;
         int count= 0;
         for (int i = 0; i < items.size(); i++) {
             for (int j = i + 1; j < items.size() - 1; j++) {
-                listItemsSolutions.add(switchItem(i,j,wait,displayNeighbour));
+                listItemsSolutions.add(switchItem(i,j));
                 //si cela ne correspond pas à un changement de tabou et que l'on respecte les conditions
                 if(originalSolution.size()>=bins.size() && !checkTabou(i,j)){
                     //on choisi cette solution comme optimale
                     originalSolution = bins;
                     switched = true;
                     count++;
+                }
+                // Update best solution
+                if (bins.size() < bestSolution.size()) {
+                    bestSolution = new ArrayList<>(bins);
                 }
                 solutions.add(new Pair<>(new Pair<>(i, j), bins));
             }
@@ -183,6 +187,19 @@ public class BinPackingSolver {
 
         for (int i =0; i<bins.size();i++){
             afficheur.refreshBin(i,bins);
+        }
+    }
+
+    public void displayBestSolution(int wait){
+        if (wait > 0){
+            try {
+                Thread.sleep(wait);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        for (int i =0; i<bestSolution.size();i++){
+            afficheur.refreshBin(i,bestSolution);
         }
     }
 

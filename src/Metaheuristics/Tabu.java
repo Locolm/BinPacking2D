@@ -33,21 +33,26 @@ public class Tabu implements Metaheuristic {
     public void run(BinPackingSolver solver){
         System.out.println("Running Tabou with { iteration:"+iteration+", lengthTabou:"+lengthTabou+", waitingTime:"+waitingTime+", displayNeighbour:"+displayNeighbour+"}");
 
+        // Best solution and eval
+
+
         //parcours des voisins et selection du meilleur dans this.bins
         for(int i=0;i<iteration;i++) {
+
             solver.originalSolution = new ArrayList<>(solver.bins);
             try {
-                solver.selectAndSwitch(waitingTime, displayNeighbour, lengthTabou);
+                solver.selectAndSwitch(lengthTabou);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             solver.bins = new ArrayList<>();
             solver.placeItem(items);
-            System.out.println(i);
             if (displayNeighbour) {
                 solver.refreshAll(waitingTime);
             }
         }
-        solver.refreshAll(0);
+        solver.displayBestSolution(0);
+        System.out.println("Tabou ended");
+        System.out.println("Best solution found : "+solver.bestSolution.size()+" bins");
     }
 }

@@ -41,9 +41,8 @@ public class Main {
             if (!input.isEmpty()){
                 if (input.equals("y") || input.equals("yes") || input.equals("1")) {
                     entryValid = true;
-                    System.out.println("Starting Tabou with \n{ iteration:5, lengthTabou:10, waitingTime:500, displayNeighbour:false}");
                     // Appeler la méthode pour exécuter le Tabou prédéfini
-                    BinPackingSolver binPackingSolver = new BinPackingSolver(Lecteur.width, Lecteur.height, Lecteur.items, new Tabu(5,10,500,false));
+                    BinPackingSolver binPackingSolver = new BinPackingSolver(Lecteur.width, Lecteur.height, Lecteur.items, new Tabu(15,10,500,true));
                     binPackingSolver.init();
                 } else if (input.equals("n") || input.equals("no") || input.equals("0")) {
                     entryValid = true;
