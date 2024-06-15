@@ -12,6 +12,7 @@ public class BinPackingSolver {
     public Metaheuristic metaheuristic;
     public List<Bin> bins;
     public List<Item> items;
+    public int bestEval;
 
     //Tabou
     public  List<Pair<Pair<Integer, Integer>, List<Bin>>> solutions; //pour évaluer si dégradation
@@ -171,6 +172,20 @@ public class BinPackingSolver {
 
     }
 
+    public void selectAndSwitchRandom() throws Exception {
+        int i = (int) (Math.random() * items.size());
+        int j = (int) (Math.random() * items.size());
+        while (i == j) {
+            j = (int) (Math.random() * items.size());
+        }
+        switchItem(i, j);
+
+        // Update best solution
+        if (bins.size() < bestSolution.size()) {
+            bestSolution = new ArrayList<>(bins);
+        }
+    }
+
     public void display() {
         afficheur = new Afficheur(bins);
         afficheur.display();
@@ -203,5 +218,8 @@ public class BinPackingSolver {
         }
     }
 
+    public int eval(List<Bin> bins){
+        return bins.size();
+    }
 }
 
