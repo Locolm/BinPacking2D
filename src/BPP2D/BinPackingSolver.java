@@ -1,6 +1,12 @@
+package BPP2D;
+
+import App.Afficheur;
+import BPP2D.Bin;
+import BPP2D.Item;
+import Utils.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class BinPackingSolver {

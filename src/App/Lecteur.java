@@ -1,17 +1,21 @@
+package App;
+
+import BPP2D.Item;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Collections;
 
 public class Lecteur {
-    static int width;
-    static int height;
+    public static int width;
+    public static int height;
 
-    static List<Item> items = new ArrayList<>();
+    public static List<Item> items = new ArrayList<>();
 
     public static void readFileBP2(String filePath) {
+        items.clear();
 
         try {
             BufferedReader lecteur = new BufferedReader(new FileReader(filePath));

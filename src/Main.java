@@ -1,3 +1,6 @@
+import App.Lecteur;
+import BPP2D.BinPackingSolver;
+
 import java.util.Scanner;
 
 public class Main {
@@ -20,7 +23,7 @@ public class Main {
                 String fileName = String.format("Ressources/binPacking2d-%02d.bp2d", fileNumber);
                 System.out.println("Running tabou on file: " + fileName);
 
-                // Appeler la méthode Lecteur.readFileBP2 avec le nom de fichier sélectionné
+                // Appeler la méthode App.Lecteur.readFileBP2 avec le nom de fichier sélectionné
                 Lecteur.readFileBP2(fileName);
             }
         }
@@ -107,7 +110,7 @@ public class Main {
 
         scanner.close();
 
-        // Créer l'instance de BinPackingSolver avec les valeurs choisies
+        // Créer l'instance de BPP2D.BinPackingSolver avec les valeurs choisies
         BinPackingSolver binPackingSolver = new BinPackingSolver(Lecteur.width, Lecteur.height, Lecteur.items, iterations, lengthTabou, waitingTime, displayNeighbour);
         binPackingSolver.init();
     }

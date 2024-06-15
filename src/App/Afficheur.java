@@ -1,3 +1,8 @@
+package App;
+
+import App.Downloader;
+import BPP2D.Bin;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -18,33 +23,24 @@ public class Afficheur extends JFrame {
     public Afficheur(List<Bin> bins) {
         this.bins = bins;
         this.binsPanels = new ArrayList<>();
-        if (bins.get(0).getHeight() <= 250) {
-            if (bins.size() >= 19) {
-                ratio = 0.8;
-            } else {
-                ratio = 1.0;
-            }
-        } else if (bins.get(0).getHeight() >= 1000) {
-            if (bins.size() >= 3) {
-                ratio = 0.1;
-            } else {
-                ratio = 0.2;
-            }
-        } else if (bins.get(0).getHeight() >= 500) {
-            if (bins.size() >= 19) {
-                ratio = 0.2;
-            } else if (bins.size() <= 8) {
-                ratio = 0.7;
-            }
-        } else {
-            ratio = 0.5;
-        }
+        setRatio(bins);
         mainPanel = new JPanel(); // Panneau principal pour tous les bins
         downloadCounter = 0;
     }
 
+    private void setRatio(List<Bin> bins) {
+        if (bins.isEmpty()) {
+            ratio = 1;
+            return;
+        }
+        // Max width 250
+        int maxWidth = 250;
+        double scaleFactor = (double) maxWidth / bins.get(0).getHeight();
+        ratio = Math.min(1, scaleFactor);
+    }
+
     public void display() {
-        setTitle("Afficheur de Bins");
+        setTitle("App.Afficheur de Bins");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
@@ -61,13 +57,13 @@ public class Afficheur extends JFrame {
         menuBar.add(menuDlSoluce);
 
         // Ajout des boutons
-        JMenuItem downloadButton = new JMenuItem("Download");
+        JMenuItem downloadButton = new JMenuItem("App.Downloader");
         downloadButton.addActionListener(e -> {
             System.out.println("Downloading...");
 
             // Génération du nom de fichier unique avec le compteur
             String fileName = "solution_BinPackind_2D_" + downloadCounter + ".json";
-            Download.download(bins, fileName);
+            Downloader.download(bins, fileName);
 
             System.out.println("File downloaded: " + fileName);
 
@@ -107,6 +103,7 @@ public class Afficheur extends JFrame {
     }
 
     private void afficherBins() {
+        mainPanel.removeAll();
         mainPanel.setLayout(new FlowLayout());
 
         for (int i = 0; i < bins.size(); i++) {

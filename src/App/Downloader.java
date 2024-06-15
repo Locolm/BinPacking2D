@@ -1,9 +1,13 @@
+package App;
+
+import BPP2D.Bin;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class Download {
+public class Downloader {
     public static void download(List<Bin> bins, String fileName) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             writer.write(toJson(bins, 0));

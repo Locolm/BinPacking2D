@@ -1,14 +1,16 @@
+package BPP2D;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Bin {
-    int width;
-    int height;
-    Item item;
+    public int width;
+    public int height;
+    public Item item;
 
-    List<Bin> sousBins;
+    public List<Bin> sousBins;
 
-    List<Integer> position;
+    public List<Integer> position;
 
     public int getWidth() {
         return width;
