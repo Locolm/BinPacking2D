@@ -3,6 +3,8 @@ package BPP2D;
 import App.Afficheur;
 import BPP2D.Bin;
 import BPP2D.Item;
+import Metaheuristics.Metaheuristic;
+import Metaheuristics.Tabu;
 import Utils.Pair;
 
 import java.util.ArrayList;
@@ -10,36 +12,30 @@ import java.util.List;
 import java.util.Objects;
 
 public class BinPackingSolver {
-    private List<Bin> bins;
-    private List<Item> items;
+    public Metaheuristic metaheuristic;
+    public List<Bin> bins;
+    public List<Item> items;
 
     //Tabou
-    private  List<Pair<Pair<Integer, Integer>, List<Bin>>> solutions; //pour évaluer si dégradation
-    private List<List<Item>> listItemsSolutions;
-    private List<Bin> originalSolution;
-    private List<Pair<Integer, Integer>> tabou = new ArrayList<>();
-    //asked user
-    private int lengthTabou=10;
-    int iteration = 5;
-    boolean displayNeighbour = false;
-    int waitingTime=500;
+    public  List<Pair<Pair<Integer, Integer>, List<Bin>>> solutions; //pour évaluer si dégradation
+    public List<List<Item>> listItemsSolutions;
+    public List<Bin> originalSolution;
+    public List<Pair<Integer, Integer>> tabou = new ArrayList<>();
+
 
     private final int binWidth;
     private final int binHeight;
 
     private Afficheur afficheur;
 
-    public BinPackingSolver(int binWidth, int binHeight, List<Item> items,int iteration,int lengthTabou, int waitingTime,boolean displayNeighbour) {
+    public BinPackingSolver(int binWidth, int binHeight, List<Item> items, Metaheuristic metaheuristic){
         this.binWidth = binWidth;
         this.binHeight = binHeight;
         this.bins = new ArrayList<>();
         this.items = items;
         this.solutions = new ArrayList<>();
-        this.lengthTabou=lengthTabou;
-        this.iteration = iteration;
-        this.displayNeighbour = displayNeighbour;
-        this.waitingTime=waitingTime;
         this.listItemsSolutions = new ArrayList<>();
+        this.metaheuristic = metaheuristic;
     }
 
     public void placeItem(List<Item> listItems) {
@@ -84,16 +80,7 @@ public class BinPackingSolver {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Running tabou ...");
-        //Tabou
-        //parcours des voisins et selection du meilleur dans this.bins
-        for(int i=0;i<iteration;i++){
-            originalSolution = new ArrayList<>(bins);
-            selectAndSwitch(waitingTime,displayNeighbour);
-            bins = new ArrayList<>();
-            placeItem(items);
-            refreshAll(waitingTime);
-        }
+        this.metaheuristic.run(this);
     }
 
     public List<Item> switchItem(int ind1, int ind2,int wait, boolean displayNeighbour) {
@@ -125,7 +112,10 @@ public class BinPackingSolver {
         return false;
     }
 
-    public void selectAndSwitch( int wait, boolean displayNeighbour ) throws Exception {
+    /**
+     * Selectionne et switch les items
+     */
+    public void selectAndSwitch( int wait, boolean displayNeighbour, int lengthTabou ) throws Exception {
         boolean switched = false;
         int count= 0;
         for (int i = 0; i < items.size(); i++) {
@@ -183,11 +173,14 @@ public class BinPackingSolver {
     }
 
     public void refreshAll(int wait){
-        try {
-            Thread.sleep(wait);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (wait > 0){
+            try {
+                Thread.sleep(wait);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+
         for (int i =0; i<bins.size();i++){
             afficheur.refreshBin(i,bins);
         }

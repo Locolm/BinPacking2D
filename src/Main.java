@@ -1,5 +1,6 @@
 import App.Lecteur;
 import BPP2D.BinPackingSolver;
+import Metaheuristics.Tabu;
 
 import java.util.Scanner;
 
@@ -42,7 +43,7 @@ public class Main {
                     entryValid = true;
                     System.out.println("Starting Tabou with \n{ iteration:5, lengthTabou:10, waitingTime:500, displayNeighbour:false}");
                     // Appeler la méthode pour exécuter le Tabou prédéfini
-                    BinPackingSolver binPackingSolver = new BinPackingSolver(Lecteur.width, Lecteur.height, Lecteur.items,5,10,500,false);
+                    BinPackingSolver binPackingSolver = new BinPackingSolver(Lecteur.width, Lecteur.height, Lecteur.items, new Tabu(5,10,500,false));
                     binPackingSolver.init();
                 } else if (input.equals("n") || input.equals("no") || input.equals("0")) {
                     entryValid = true;
@@ -85,9 +86,9 @@ public class Main {
         }
 
         while (true) {
-            System.out.println("Select Waiting Time between each iteration (must be positive): ");
+            System.out.println("Select Waiting Time between each iteration (0 for no delay): ");
             waitingTime = scanner.nextInt();
-            if (waitingTime > 0) {
+            if (waitingTime >= 0) {
                 break;
             } else {
                 System.out.println("Waiting Time must be positive. Please try again.");
@@ -110,8 +111,8 @@ public class Main {
 
         scanner.close();
 
-        // Créer l'instance de BPP2D.BinPackingSolver avec les valeurs choisies
-        BinPackingSolver binPackingSolver = new BinPackingSolver(Lecteur.width, Lecteur.height, Lecteur.items, iterations, lengthTabou, waitingTime, displayNeighbour);
+        // Créer l'instance de BinPackingSolver avec les valeurs choisies
+        BinPackingSolver binPackingSolver = new BinPackingSolver(Lecteur.width, Lecteur.height, Lecteur.items, new Tabu(iterations, lengthTabou, waitingTime, displayNeighbour));
         binPackingSolver.init();
     }
 }
